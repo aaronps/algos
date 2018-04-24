@@ -5,8 +5,8 @@ class ListItem:
         self.next = _next
 
 
-class List:
-    """A List implementatinon not using Python Lists"""
+class LinkedList:
+    """A List implementation using linked nodes"""
 
     def __init__(self, first_value=None):
         """Creates a list with optional first element inserted"""
@@ -41,7 +41,8 @@ class List:
     
     def prepend(self, value):
         """Prepends an item at the beginning of the List"""
-        self.root = ListItem(value, self.root)             
+        self.root = ListItem(value, self.root)
+        return self
 
     def append(self, value):
         """Appends an item at the end of the List"""
@@ -53,6 +54,8 @@ class List:
                 it = it.next
 
             it.next = ListItem(value,None)
+
+        return self
 
     def at(self, index):
         """Returns the item at the specified index of the List"""
@@ -87,38 +90,74 @@ class List:
             if it is not None and it.next is not None:
                 it.next = it.next.next
 
+        return self
+
+    def remove(self, value):
+        """Removes first item matching value"""
+        if self.root is not None:
+            if self.root.value == value:
+                self.root = self.root.next
+            else:
+                it = self.root
+                while it.next is not None:
+                    if it.next.value == value:
+                        it.next = it.next.next
+                        break
+                        
+        return self
+
+    def removeAll(self, value):
+        """Removes all items matching value"""
+        while self.root is not None and self.root.value == value:
+            self.root = self.root.next
+
+        if self.root is not None:
+            it = self.root
+            while it.next is not None:
+                if it.next.value == value:
+                    it.next = it.next.next
+                            
+        return self
+
+    def setAt(self, index, value):
+        """Sets element at index to value (if it exists)"""
+        it = self.root
+        while it is not None and index > 0:
+            index = index - 1
+            it = it.next
+
+        if it is not None:
+            it.value = value
+
+        return self
             
 if __name__ == '__main__':
-    print('List example')
+    print('LinkedList example')
 
-    li = List()
+    li = LinkedList()
     print('empty list is', li)
 
-    li.prepend(1)
-    print('one item', li)
+    print('one item', li.prepend(1))
+    print('two items', li.prepend(2))
+    print('three items', li.prepend(3))
+    print('append 2', li.append(2))
+    print('append 3', li.append(3))
 
-    li.prepend(2)
-    print('two items', li)
-
-    li.prepend(3)
-    print('three items', li)
-
-    li.append(2)
-    print('append 2', li)
-
-    li.append(3)
-    print('append 3', li)
-
-    li2 = List()    
+    li2 = LinkedList()    
     li2.append(1)
     li2.append(2)
     li2.append(3)
-
     print('new appended list', li2)            
 
     print('length 1 =', len(li))
     print('length 2 =', len(li2))
-    print('length empty =', len(List()))
-    print('length init1 =', len(List(5)))
+    print('length empty =', len(LinkedList()))
+    print('length init1 =', len(LinkedList(5)), 'List(5)', LinkedList(5))
 
     print('at 2 =', li.at(2))
+    print('setAt(0,5)', li2.setAt(0,5))
+
+    print('delete(2) =', li.delete(2))
+    print('remove 2 =', li.remove(2))
+    print('removeAll(3) =', li.removeAll(3))
+    
