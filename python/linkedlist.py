@@ -1,29 +1,34 @@
 
-class ListItem:
-    def __init__(self, value, _next=None):
+class Node:
+    def __init__(self, value, next_=None):
         self.value = value
-        self.next = _next
+        self.next = next_
 
 
 class LinkedList:
     """A List implementation using linked nodes"""
 
-    def __init__(self, first_value=None):
-        """Creates a list with optional first element inserted"""
-        if first_value is not None:
-            self.root = ListItem(first_value)
-        else:
-            self.root = None
+    def __init__(self, *items):
+        """Creates a list with optional initial elements"""
+        self.root = None
+        it = self.root
+        for value in items:
+            if it is None:
+                it = Node(value)
+                self.root = it
+            else:
+                it.next = Node(value)
+                it = it.next
 
     def __str__(self):
         """Renders the list as String"""
-        result = '('
+        result = 'LinkedList('
         it = self.root
         sep = ''
 
         while it is not None:
             result = result + sep + str(it.value)
-            sep = ','
+            sep = ', '
             it = it.next
 
         return result + ')'
@@ -38,22 +43,22 @@ class LinkedList:
             it = it.next
          
         return count
-    
+
     def prepend(self, value):
         """Prepends an item at the beginning of the List"""
-        self.root = ListItem(value, self.root)
+        self.root = Node(value, self.root)
         return self
 
     def append(self, value):
         """Appends an item at the end of the List"""
         if self.root is None:
-            self.root = ListItem(value, None)
+            self.root = Node(value, None)
         else:
             it = self.root
             while it.next is not None:
                 it = it.next
 
-            it.next = ListItem(value,None)
+            it.next = Node(value, None)
 
         return self
 
@@ -106,7 +111,7 @@ class LinkedList:
                         
         return self
 
-    def removeAll(self, value):
+    def remove_all(self, value):
         """Removes all items matching value"""
         while self.root is not None and self.root.value == value:
             self.root = self.root.next
@@ -119,7 +124,7 @@ class LinkedList:
                             
         return self
 
-    def setAt(self, index, value):
+    def set_at(self, index, value):
         """Sets element at index to value (if it exists)"""
         it = self.root
         while it is not None and index > 0:
@@ -130,34 +135,36 @@ class LinkedList:
             it.value = value
 
         return self
-            
+
+
 if __name__ == '__main__':
     print('LinkedList example')
 
+    print("new empty", LinkedList())
+    print("new one element", LinkedList(1))
+    print("new multiple elements", LinkedList(1, 2, 3, 4, 5))
+
+    print("len empty", len(LinkedList()))
+    print("len one element", len(LinkedList(1)))
+    print("len multiple elements", len(LinkedList(1, 2, 3, 4, 5)))
+
     li = LinkedList()
-    print('empty list is', li)
+    print('li =', li)
+    print('li.prepend(1) =', li.prepend(1))
+    print('li.prepend(2) =', li.prepend(2))
+    print('li.prepend(3) =', li.prepend(3))
+    print('li.append(2) =', li.append(2))
+    print('li.append(3) =', li.append(3))
+    print('li.at(2) =', li.at(2))
+    print('li.at(8) =', li.at(8))
+    print('li.delete(2) =', li.delete(2))
+    print('li.remove(2) =', li.remove(2))
+    print('li.remove_all(3) =', li.remove_all(3))
 
-    print('one item', li.prepend(1))
-    print('two items', li.prepend(2))
-    print('three items', li.prepend(3))
-    print('append 2', li.append(2))
-    print('append 3', li.append(3))
+    li2 = LinkedList('a', 'b', 'c', 'd')
+    print('li2 =', li2)
+    print('li2.set_at(0,"xxx") =', li2.set_at(0, "xxx"))
+    print('li2.set_at(8,"out") =', li2.set_at(8, "out"))
+    print('li2.set_at(3,"zzz") =', li2.set_at(3, "zzz"))
+    print('li2.set_at(2,"okk") =', li2.set_at(2, "okk"))
 
-    li2 = LinkedList()    
-    li2.append(1)
-    li2.append(2)
-    li2.append(3)
-    print('new appended list', li2)            
-
-    print('length 1 =', len(li))
-    print('length 2 =', len(li2))
-    print('length empty =', len(LinkedList()))
-    print('length init1 =', len(LinkedList(5)), 'List(5)', LinkedList(5))
-
-    print('at 2 =', li.at(2))
-    print('setAt(0,5)', li2.setAt(0,5))
-
-    print('delete(2) =', li.delete(2))
-    print('remove 2 =', li.remove(2))
-    print('removeAll(3) =', li.removeAll(3))
-    
