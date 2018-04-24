@@ -136,6 +136,17 @@ class LinkedList:
 
         return self
 
+    def reverse(self):
+        """Returns a new list with the result of reversing this list"""
+        newList = LinkedList()
+        
+        it = self.root
+        while it is not None:
+            newList.prepend(it.value)
+            it = it.next
+            
+        return newList
+
 
 if __name__ == '__main__':
     print('LinkedList example')
@@ -168,3 +179,4 @@ if __name__ == '__main__':
     print('li2.set_at(3,"zzz") =', li2.set_at(3, "zzz"))
     print('li2.set_at(2,"okk") =', li2.set_at(2, "okk"))
 
+    print('reverse 1,2,3 =', LinkedList(1,2,3).reverse())
