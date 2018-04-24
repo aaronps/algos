@@ -1,13 +1,10 @@
 
 def reverse(t):
-    if t is ():
-        return ()
-
-    value, it = t
-    result = (value, ())
-    while it is not ():
-        value, it = it
-        result = (value, result)
+    """Reverses a linked tuple list's linked tuples."""
+    result = ()
+    while t is not ():
+        value, t = t
+        result = value, result
 
     return result
     
@@ -17,14 +14,11 @@ class LinkedTupleList:
 
     def __init__(self, *items):
         """Creates a list with optional initial elements"""
-        self.root = ()
-        it = self.root
+        it = ()
         for value in items:
-            if it is ():
-                it = (value,())
-                self.root = it
-            else:
-                it = (value,it)
+            it = value, it
+
+        self.root = reverse(it)
 
     def __str__(self):
         """Renders the list as String"""
@@ -52,39 +46,97 @@ class LinkedTupleList:
 
     def prepend(self, value):
         """Prepends an item at the beginning of the List"""
-        self.root = (value, self.root)
+        self.root = value, self.root
         return self
 
     def append(self, value):
         """Appends an item at the end of the List"""
-        if self.root is ():
-            self.root = (value, ())
-        else:
-            v, it = self.root
-            newRoot = (v, ())
-            while it is not ():
-                v, it = it
-                newRoot = (v, newRoot)
-
-            self.root = reverse(newRoot)
-            
+        self.root = reverse((value, reverse(self.root)))
         return self
 
     def at(self, index):
         """Returns the item at the specified index of the List"""
-        if self.root is ():
-            return None
-        
+        it = self.root
         offset = 0
-        value, it = self.root
-        while offset < index and it is not ():
-            offset = offset + 1
+        while it is not ():
             value, it = it
+            if offset == index:
+                return value
 
-        if offset == index:
-            return value
+            offset = offset + 1
 
         return None
+
+    def delete(self, index):
+        """Deletes the item at specified index"""
+        it = self.root
+        result = ()
+        count = 0
+        while it is not ():
+            if count != index:
+                result = it[0], result
+
+            it = it[1]
+            count = count + 1
+
+        self.root = reverse(result)
+        return self
+
+    def remove(self, value):
+        """Removes first item matching value"""
+        it = self.root
+        result = ()
+        while it is not ():
+            if value is not None and it[0] == value:
+                value = None
+            else:
+                result = it[0], result
+
+            it = it[1]
+
+        self.root = reverse(result)
+        return self
+
+    def remove_all(self, value):
+        """Removes all items matching value"""
+        it = self.root
+        result = ()
+        while it is not ():
+            if it[0] != value:
+                result = it[0], result
+
+            it = it[1]
+
+        self.root = reverse(result)
+        return self
+
+    def set(self, index, value):
+        """Sets element at index to value (if it exists)"""
+        it = self.root
+        result = ()
+        count = 0
+        while it is not ():
+            if count == index:
+                result = value, result
+            else:
+                result = it[0], result
+
+            count = count + 1
+            it = it[1]
+
+        self.root = reverse(result)
+        return self
+
+    def insert(self, index, value):
+        """Inserts value at specified index"""
+        # to be done
+        pass
+
+    def reverse(self):
+        """Returns a new list with the result of reversing this list"""
+        result = LinkedTupleList()
+        result.root = reverse(self.root)
+        return result
 
 
 if __name__ == '__main__':
@@ -107,5 +159,15 @@ if __name__ == '__main__':
     print('li.append(3) =', li.append(3))
     print('li.at(2) =', li.at(2))
     print('li.at(8) =', li.at(8))
+    print('li.delete(2) =', li.delete(2))
+    print('li.remove(2) =', li.remove(2))
+    print('li.remove_all(3) =', li.remove_all(3))
 
-    
+    li2 = LinkedTupleList('a', 'b', 'c', 'd')
+    print('li2 =', li2)
+    print('li2.set(0,"xxx") =', li2.set(0, "xxx"))
+    print('li2.set(8,"out") =', li2.set(8, "out"))
+    print('li2.set(3,"zzz") =', li2.set(3, "zzz"))
+    print('li2.set(2,"okk") =', li2.set(2, "okk"))
+
+    print('reverse 1,2,3 =', LinkedTupleList(1, 2, 3).reverse())

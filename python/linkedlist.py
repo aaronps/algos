@@ -124,7 +124,7 @@ class LinkedList:
                             
         return self
 
-    def set_at(self, index, value):
+    def set(self, index, value):
         """Sets element at index to value (if it exists)"""
         it = self.root
         while it is not None and index > 0:
@@ -136,16 +136,31 @@ class LinkedList:
 
         return self
 
+    def insert(self, index, value):
+        """Inserts value at specified index"""
+        if index == 0:
+            self.root = Node(value, self.root)
+        else:
+            it = self.root
+            count = 1
+            while count < index and it.next is not None:
+                count = count + 1
+                it = it.next
+
+            it.next = Node(value, it.next)
+
+        return self
+
     def reverse(self):
         """Returns a new list with the result of reversing this list"""
-        newList = LinkedList()
+        new_list = LinkedList()
         
         it = self.root
         while it is not None:
-            newList.prepend(it.value)
+            new_list.prepend(it.value)
             it = it.next
             
-        return newList
+        return new_list
 
 
 if __name__ == '__main__':
@@ -174,9 +189,12 @@ if __name__ == '__main__':
 
     li2 = LinkedList('a', 'b', 'c', 'd')
     print('li2 =', li2)
-    print('li2.set_at(0,"xxx") =', li2.set_at(0, "xxx"))
-    print('li2.set_at(8,"out") =', li2.set_at(8, "out"))
-    print('li2.set_at(3,"zzz") =', li2.set_at(3, "zzz"))
-    print('li2.set_at(2,"okk") =', li2.set_at(2, "okk"))
+    print('li2.set(0,"xxx") =', li2.set(0, "xxx"))
+    print('li2.set(8,"out") =', li2.set(8, "out"))
+    print('li2.set(3,"zzz") =', li2.set(3, "zzz"))
+    print('li2.set(2,"okk") =', li2.set(2, "okk"))
+    print('li2.insert(2,"middle") =', li2.insert(2, "middle"))
+    print('li2.insert(0,"start") =', li2.insert(0, "start"))
+    print('li2.insert(8,"end") =', li2.insert(8, "end"))
 
-    print('reverse 1,2,3 =', LinkedList(1,2,3).reverse())
+    print('reverse 1,2,3 =', LinkedList(1, 2, 3).reverse())
