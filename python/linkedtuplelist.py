@@ -44,6 +44,13 @@ class LinkedTupleList:
         
         return count
 
+    def __getitem__(self, item):
+        """Basic __getitem__ for indexed access"""
+        if type(item) is slice:
+            raise TypeError
+
+        return self.at(item)
+
     def prepend(self, value):
         """Prepends an item at the beginning of the List"""
         self.root = value, self.root
@@ -186,7 +193,7 @@ if __name__ == '__main__':
     print('li.append(3) =', li.append(3))
     print('li.at(2) =', li.at(2))
     print('li.at(8) =', li.at(8))
-    print('li.copy().delete(1,3) =', li.copy().delete(1,3))
+    print('li.copy().delete(1,3) =', li.copy().delete(1, 3))
     print('li.delete(2) =', li.delete(2))
     print('li.remove(2) =', li.remove(2))
     print('li.remove_all(3) =', li.remove_all(3))
@@ -202,3 +209,5 @@ if __name__ == '__main__':
     print('li2.insert(8,"end") =', li2.insert(8, "end"))
 
     print('reverse 1,2,3 =', LinkedTupleList(1, 2, 3).reverse())
+
+    print('li2[2] = ', li2[2])

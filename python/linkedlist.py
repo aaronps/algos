@@ -44,6 +44,13 @@ class LinkedList:
          
         return count
 
+    def __getitem__(self, item):
+        """Basic __getitem__ for indexed access"""
+        if type(item) is slice:
+            raise TypeError
+
+        return self.at(item)
+
     def prepend(self, value):
         """Prepends an item at the beginning of the List"""
         self.root = Node(value, self.root)
@@ -220,3 +227,5 @@ if __name__ == '__main__':
     print('li2.insert(8,"end") =', li2.insert(8, "end"))
 
     print('reverse 1,2,3 =', LinkedList(1, 2, 3).reverse())
+
+    print('li2[2] = ', li2[2])
