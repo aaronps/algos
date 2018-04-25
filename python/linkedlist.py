@@ -78,10 +78,11 @@ class LinkedList:
 
         return None
 
-    def delete(self, index):
-        """Deletes the item at specified index"""
+    def delete(self, index, count=1):
+        """Deletes count item from index"""
         if index == 0:
-            if self.root is not None:
+            while count > 0 and self.root is not None:
+                count = count - 1
                 self.root = self.root.next
 
         else:
@@ -92,8 +93,10 @@ class LinkedList:
                 offset = offset + 1
                 it = it.next
 
-            if it is not None and it.next is not None:
-                it.next = it.next.next
+            if it is not None:
+                while count > 0 and it.next is not None:
+                    count = count - 1
+                    it.next = it.next.next
 
         return self
 
@@ -121,6 +124,8 @@ class LinkedList:
             while it.next is not None:
                 if it.next.value == value:
                     it.next = it.next.next
+                else:
+                    it = it.next
                             
         return self
 
@@ -162,6 +167,22 @@ class LinkedList:
             
         return new_list
 
+    def clear(self):
+        """Clears the contents of the list"""
+        self.root = None
+        return self
+
+    def copy(self):
+        """Returns a copy of the list"""
+        result = LinkedList()
+        it = self.root
+        while it is not None:
+            # non efficient and lazy way :)
+            result.append(it.value)
+            it = it.next
+            
+        return result
+    
 
 if __name__ == '__main__':
     print('LinkedList example')
@@ -183,6 +204,7 @@ if __name__ == '__main__':
     print('li.append(3) =', li.append(3))
     print('li.at(2) =', li.at(2))
     print('li.at(8) =', li.at(8))
+    print('li.copy().delete(1,3) =', li.copy().delete(1,3))
     print('li.delete(2) =', li.delete(2))
     print('li.remove(2) =', li.remove(2))
     print('li.remove_all(3) =', li.remove_all(3))

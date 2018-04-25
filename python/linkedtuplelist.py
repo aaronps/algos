@@ -67,17 +67,18 @@ class LinkedTupleList:
 
         return None
 
-    def delete(self, index):
-        """Deletes the item at specified index"""
+    def delete(self, index, count=1):
+        """Deletes count items from index"""
         it = self.root
         result = ()
-        count = 0
+        offset = 0
+        delete_to = index + count
         while it is not ():
-            if count != index:
+            if offset < index or offset >= delete_to:
                 result = it[0], result
 
             it = it[1]
-            count = count + 1
+            offset = offset + 1
 
         self.root = reverse(result)
         return self
@@ -129,13 +130,39 @@ class LinkedTupleList:
 
     def insert(self, index, value):
         """Inserts value at specified index"""
-        # to be done
-        pass
+        it = self.root
+        result = ()
+        count = 0
+        while it is not ():
+            if count == index:
+                result = value, result
+
+            count = count + 1
+            result = it[0], result
+            it = it[1]
+
+        if count <= index:
+            result = value, result
+
+        self.root = reverse(result)            
+        return self
 
     def reverse(self):
         """Returns a new list with the result of reversing this list"""
         result = LinkedTupleList()
         result.root = reverse(self.root)
+        return result
+
+    def clear(self):
+        """Clears the contents of the list"""
+        self.root = ()
+        return self
+
+    def copy(self):
+        """Returns a copy of the list"""
+        result = LinkedTupleList()
+        # we can reuse because tuples are immutable
+        result.root = self.root
         return result
 
 
@@ -159,6 +186,7 @@ if __name__ == '__main__':
     print('li.append(3) =', li.append(3))
     print('li.at(2) =', li.at(2))
     print('li.at(8) =', li.at(8))
+    print('li.copy().delete(1,3) =', li.copy().delete(1,3))
     print('li.delete(2) =', li.delete(2))
     print('li.remove(2) =', li.remove(2))
     print('li.remove_all(3) =', li.remove_all(3))
@@ -169,5 +197,8 @@ if __name__ == '__main__':
     print('li2.set(8,"out") =', li2.set(8, "out"))
     print('li2.set(3,"zzz") =', li2.set(3, "zzz"))
     print('li2.set(2,"okk") =', li2.set(2, "okk"))
+    print('li2.insert(2,"middle") =', li2.insert(2, "middle"))
+    print('li2.insert(0,"start") =', li2.insert(0, "start"))
+    print('li2.insert(8,"end") =', li2.insert(8, "end"))
 
     print('reverse 1,2,3 =', LinkedTupleList(1, 2, 3).reverse())
