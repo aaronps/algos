@@ -172,6 +172,54 @@ class LinkedTupleList:
         result.root = self.root
         return result
 
+    def insert_sorted(self, value):
+        if self.root is ():
+            self.root = value, ()
+            return self
+
+        v, next_ = self.root
+        if value <= v:
+            # we are first, just prepend
+            self.root = value, self.root
+            return self
+
+        newRoot = v, ()
+        while next_ is not ():
+            v, next_ = next_
+            if value <= v:
+                newRoot = v, (value, newRoot)
+                value = None
+                break
+            
+            newRoot = v, newRoot
+
+        if value is not None:
+            newRoot = value, newRoot
+
+        while next_ is not():
+            v, next_ = next_
+            newRoot = v, newRoot
+
+        self.root = reverse(newRoot)
+        return self
+
+    # unfinished
+    def sort_insert(self):
+        if self.root is ():
+            return self
+
+        value, next_ = self.root
+        newRoot = value, ()
+        while next_ is not ():
+            value, next_ = next_
+
+            v, it = newRoot
+            if value < v:
+                pass
+
+        self.root = newRoot
+        return self
+
 
 if __name__ == '__main__':
     print('LinkedTupleList example')
@@ -211,3 +259,15 @@ if __name__ == '__main__':
     print('reverse 1,2,3 =', LinkedTupleList(1, 2, 3).reverse())
 
     print('li2[2] = ', li2[2])
+
+    insort = LinkedTupleList()
+    print(insort.insert_sorted(2))
+    print(insort.insert_sorted(5))
+    print(insort.insert_sorted(4))
+    print(insort.insert_sorted(1))
+    print(insort.insert_sorted(6))
+    print(insort.insert_sorted(3))
+
+    print('insort =', insort)
+
+
