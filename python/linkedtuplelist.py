@@ -173,51 +173,37 @@ class LinkedTupleList:
         return result
 
     def insert_sorted(self, value):
-        if self.root is ():
-            self.root = value, ()
-            return self
-
-        v, next_ = self.root
-        if value <= v:
-            # we are first, just prepend
+        if self.root is () or value <= self.root[0]:
             self.root = value, self.root
             return self
 
-        newRoot = v, ()
-        while next_ is not ():
-            v, next_ = next_
-            if value <= v:
-                newRoot = v, (value, newRoot)
-                value = None
-                break
+        newRoot = self.root[0], ()
+        it = self.root[1]
+        while it is not () and value > it[0]:
+            newRoot = it[0], newRoot
+            it = it[1]
             
-            newRoot = v, newRoot
+        newRoot = value, newRoot
 
-        if value is not None:
-            newRoot = value, newRoot
-
-        while next_ is not():
-            v, next_ = next_
-            newRoot = v, newRoot
+        while it is not ():
+            newRoot = it[0], newRoot
+            it = it[1]
 
         self.root = reverse(newRoot)
         return self
 
-    # unfinished
+    # will use lazy way
     def sort_insert(self):
-        if self.root is ():
+        if self.root is () or self.root[1] is ():
             return self
 
-        value, next_ = self.root
-        newRoot = value, ()
-        while next_ is not ():
-            value, next_ = next_
+        new_list = LinkedTupleList(self.root[0])
+        it = self.root[1]
+        while it is not ():
+            new_list.insert_sorted(it[0])
+            it = it[1]
 
-            v, it = newRoot
-            if value < v:
-                pass
-
-        self.root = newRoot
+        self.root = new_list.root
         return self
 
 
@@ -269,5 +255,5 @@ if __name__ == '__main__':
     print(insort.insert_sorted(3))
 
     print('insort =', insort)
-
+    print('sort =', LinkedTupleList(7,3,1,3).sort_insert())
 

@@ -189,7 +189,32 @@ class LinkedList:
             it = it.next
             
         return result
+
+    def insert_sorted(self, value):
+        if self.root is None or value <= self.root.value:
+            self.root = Node(value, self.root)
+            return self
+
+        it = self.root
+        while it.next is not None and value > it.next.value:
+            it = it.next
     
+        it.next = Node(value, it.next)
+        return self
+
+    def sort_insert(self):
+        if self.root is None or self.root.next is None:
+            return self
+
+        new_list = LinkedList(self.root.value)
+        it = self.root.next
+        while it is not None:
+            new_list.insert_sorted(it.value)
+            it = it.next
+        
+        self.root = new_list.root
+        return self
+        
 
 if __name__ == '__main__':
     print('LinkedList example')
@@ -229,3 +254,15 @@ if __name__ == '__main__':
     print('reverse 1,2,3 =', LinkedList(1, 2, 3).reverse())
 
     print('li2[2] = ', li2[2])
+
+    insort = LinkedList()
+    print(insort.insert_sorted(2))
+    print(insort.insert_sorted(5))
+    print(insort.insert_sorted(4))
+    print(insort.insert_sorted(1))
+    print(insort.insert_sorted(6))
+    print(insort.insert_sorted(3))
+
+    print('insort =', insort)
+    print('sort =', LinkedList(7,3,1,3).sort_insert())
+        
