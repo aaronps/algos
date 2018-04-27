@@ -216,6 +216,22 @@ class LinkedList:
         
         self.root = new_list.root
         return self
+
+    def sort_bubble(self):
+        if self.root is None or self.root.next is None:
+            return self
+
+        swapped = True
+        while swapped:
+            swapped = False
+            it = self.root
+            while it.next is not None:
+                if it.value > it.next.value:
+                    it.next.value, it.value = it.value, it.next.value
+                    swapped = True
+                it = it.next
+                
+        return self
         
 
 if __name__ == '__main__':
@@ -266,4 +282,5 @@ if __name__ == '__main__':
     print(insort.insert_sorted(3))
 
     print('insort =', insort)
-    print('sort =', LinkedList(7, 3, 1, 3).sort_insert())
+    print('sort_insert =', LinkedList(3, 6, 4, 7, 1, 2, 5, 0).sort_insert())
+    print('sort_bubble =', LinkedList(3, 6, 4, 7, 1, 2, 5, 0).sort_bubble())
