@@ -191,6 +191,7 @@ class LinkedList:
         return result
 
     def insert_sorted(self, value):
+        """Inserts value on the list keeping its order"""
         if self.root is None or value <= self.root.value:
             self.root = Node(value, self.root)
             return self
@@ -203,6 +204,7 @@ class LinkedList:
         return self
 
     def sort_insert(self):
+        """Sorts the list"""
         if self.root is None or self.root.next is None:
             return self
 
@@ -236,7 +238,7 @@ if __name__ == '__main__':
     print('li.append(3) =', li.append(3))
     print('li.at(2) =', li.at(2))
     print('li.at(8) =', li.at(8))
-    print('li.copy().delete(1,3) =', li.copy().delete(1,3))
+    print('li.copy().delete(1,3) =', li.copy().delete(1, 3))
     print('li.delete(2) =', li.delete(2))
     print('li.remove(2) =', li.remove(2))
     print('li.remove_all(3) =', li.remove_all(3))
@@ -264,5 +266,4 @@ if __name__ == '__main__':
     print(insort.insert_sorted(3))
 
     print('insort =', insort)
-    print('sort =', LinkedList(7,3,1,3).sort_insert())
-        
+    print('sort =', LinkedList(7, 3, 1, 3).sort_insert())
