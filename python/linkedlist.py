@@ -4,6 +4,46 @@ class Node:
         self.value = value
         self.next = next_
 
+    def __str__(self):
+        """Renders the Node as String"""
+        result = 'NodeList('
+        it = self
+        sep = ''
+
+        while it is not None:
+            result = result + sep + str(it.value)
+            sep = ', '
+            it = it.next
+
+        return result + ')'
+
+
+def merge_nodes(a, b):
+    if a.value <= b.value:
+        r = a
+        a = a.next
+    else:
+        r = b
+        b = b.next
+
+    rit = r
+    while a is not None and b is not None:
+        if a.value <= b.value:
+            rit.next = a
+            a = a.next
+        else:
+            rit.next = b
+            b = b.next
+
+        rit = rit.next
+
+    if a is not None:
+        rit.next = a
+    elif b is not None:
+        rit.next = b
+        
+    return r
+
 
 class LinkedList:
     """A List implementation using linked nodes"""
@@ -232,8 +272,36 @@ class LinkedList:
                 it = it.next
                 
         return self
-        
 
+    def sort_merge(self):
+        if self.root is None or self.root.next is None:
+            return self
+
+        # lol = list of lists
+        lol = LinkedList()
+        it = self.root
+        while it is not None and it.next is not None:
+            if it.value <= it.next.value:
+                v = it
+                it = v.next.next
+                v.next.next = None
+                lol.prepend(v)
+                #it.next.next, it = None, it.next.next
+            else:
+                t = it
+                v = it.next
+                it = it.next.next
+                v.next = t
+                t.next = None
+                lol.prepend(v)
+                #lol.prepend(it.next)
+                #it.next, it.next.next, it = None, it, it.next.next
+
+        print('initial sort', lol)
+        
+                        
+        return self
+    
 if __name__ == '__main__':
     print('LinkedList example')
 
@@ -284,3 +352,4 @@ if __name__ == '__main__':
     print('insort =', insort)
     print('sort_insert =', LinkedList(3, 6, 4, 7, 1, 2, 5, 0).sort_insert())
     print('sort_bubble =', LinkedList(3, 6, 4, 7, 1, 2, 5, 0).sort_bubble())
+    print('sort_merge  =', LinkedList(6, 3, 4, 7, 2, 1, 5, 0).sort_merge())
