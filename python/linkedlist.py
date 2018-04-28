@@ -280,28 +280,39 @@ class LinkedList:
         # lol = list of lists
         lol = LinkedList()
         it = self.root
+
+        # step 1: sort elements by pair
+        # I'm reusing the Nodes
         while it is not None and it.next is not None:
             if it.value <= it.next.value:
-                v = it
-                it = v.next.next
-                v.next.next = None
-                lol.prepend(v)
-                #it.next.next, it = None, it.next.next
+                # these two nodes are already in order, just push the first one
+                # and we will adjust links after that
+                lol.prepend(it)
+
+                # tricky line:
+                # 1- The second node next link to None
+                # 2- The iterator jumps two nodes
+                it.next.next, it = None, it.next.next
+
             else:
-                t = it
-                v = it.next
-                it = it.next.next
-                v.next = t
-                t.next = None
-                lol.prepend(v)
-                #lol.prepend(it.next)
-                #it.next, it.next.next, it = None, it, it.next.next
+                # We have to swap both nodes and adjust the links
+                # first push the second node
+                lol.prepend(it.next)
+
+                # tricky line, MUST be in this order:
+                # 1- The second node next link becomes the first node
+                # 2- The first node next link becomes None
+                # 3- The iterator jumps two nodes
+                it.next.next, it.next, it = it, None, it.next.next
+
+        if it is not None:
+            lol.prepend(it)
 
         print('initial sort', lol)
-        
                         
         return self
-    
+
+
 if __name__ == '__main__':
     print('LinkedList example')
 
@@ -352,4 +363,4 @@ if __name__ == '__main__':
     print('insort =', insort)
     print('sort_insert =', LinkedList(3, 6, 4, 7, 1, 2, 5, 0).sort_insert())
     print('sort_bubble =', LinkedList(3, 6, 4, 7, 1, 2, 5, 0).sort_bubble())
-    print('sort_merge  =', LinkedList(6, 3, 4, 7, 2, 1, 5, 0).sort_merge())
+    print('sort_merge  =', LinkedList(6, 3, 4, 2, 1, 5, 0).sort_merge())
