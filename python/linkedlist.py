@@ -308,8 +308,18 @@ class LinkedList:
         if it is not None:
             lol.prepend(it)
 
-        print('initial sort', lol)
-                        
+        # Step 2: merge sublists two by two
+        # also reusing the Nodes
+        while lol.root.next is not None:
+            it, lol.root = lol.root, None
+            while it is not None and it.next is not None:
+                lol.prepend(merge_nodes(it.value, it.next.value))
+                it = it.next.next
+
+            if it is not None:
+                lol.prepend(it)
+
+        self.root = lol.root.value
         return self
 
 
