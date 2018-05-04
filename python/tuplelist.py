@@ -1,4 +1,44 @@
 
+def twobytwo(t):
+    """Iterator over a tuple returning two values each interation (or value and ())"""
+    tlen = len(t)
+    index = 0
+    while index < tlen:
+        if index != tlen-1:
+            yield(t[index], t[index + 1])
+        else:
+            yield(t[index], ())
+            raise StopIteration
+
+        index = index + 2
+
+
+def merge_tuples(a, b):
+    """Merges two sorted tuples onto a sorted tuple"""
+    alen = len(a)
+    blen = len(b)
+
+    aindex = 0
+    bindex = 0
+
+    result = ()
+
+    while aindex < alen and bindex < blen:
+        if a[aindex] <= b[bindex]:
+            result = result + (a[aindex],)
+            aindex = aindex + 1
+        else:
+            result = result + (b[bindex],)
+            bindex = bindex + 1
+
+    if aindex < alen:
+        result = result + a[aindex:]
+    elif bindex < blen:
+        result = result + b[bindex:]
+
+    return result
+
+
 class TupleList:
     """A List implementation using a tuple as container."""
 
@@ -37,24 +77,11 @@ class TupleList:
 
     def delete(self, index, count=1):
         """Deletes count item from index"""
-        # TODO
+        # in fact, it is not needed to compare...
         if index == 0:
-            while count > 0 and self.root is not None:
-                count = count - 1
-                self.root = self.root.next
-
+            self.root = self.root[count:]
         else:
-            offset = 1
-            it = self.root
-
-            while offset < index and it is not None:
-                offset = offset + 1
-                it = it.next
-
-            if it is not None:
-                while count > 0 and it.next is not None:
-                    count = count - 1
-                    it.next = it.next.next
+            self.root = self.root[:index] + self.root[index+count:]
 
         return self
 
@@ -69,178 +96,124 @@ class TupleList:
 
     def remove_all(self, value):
         """Removes all items matching value"""
-        while self.root is not None and self.root.value == value:
-            self.root = self.root.next
+        index = len(self.root) - 1
+        while index >= 0:
+            if self.root[index] == value:
+                self.delete(index)
 
-        if self.root is not None:
-            it = self.root
-            while it.next is not None:
-                if it.next.value == value:
-                    it.next = it.next.next
-                else:
-                    it = it.next
-                            
+            index = index - 1
+
         return self
 
     def set(self, index, value):
         """Sets element at index to value (if it exists)"""
-        it = self.root
-        while it is not None and index > 0:
-            index = index - 1
-            it = it.next
-
-        if it is not None:
-            it.value = value
+        self.root = self.root[:index] + (value,) + self.root[index+1:]
 
         return self
 
     def insert(self, index, value):
         """Inserts value at specified index"""
-        if index == 0:
-            self.root = Node(value, self.root)
-        else:
-            it = self.root
-            count = 1
-            while count < index and it.next is not None:
-                count = count + 1
-                it = it.next
-
-            it.next = Node(value, it.next)
+        self.root = self.root[:index] + (value,) + self.root[index:]
 
         return self
 
     def reverse(self):
         """Returns a new list with the result of reversing this list"""
-        new_list = LinkedList()
-        
-        it = self.root
-        while it is not None:
-            new_list.prepend(it.value)
-            it = it.next
-            
-        return new_list
+        r = ()
+
+        for value in self.root:
+            r = (value,) + r
+
+        return TupleList(*r)
 
     def clear(self):
         """Clears the contents of the list"""
-        self.root = None
+        self.root = ()
         return self
 
     def copy(self):
         """Returns a copy of the list"""
-        result = LinkedList()
-        it = self.root
-        while it is not None:
-            # non efficient and lazy way :)
-            result.append(it.value)
-            it = it.next
-            
-        return result
+        return TupleList(*self.root)
 
     def insert_sorted(self, value):
         """Inserts value on the list keeping its order"""
-        if self.root is None or value <= self.root.value:
-            self.root = Node(value, self.root)
-            return self
+        for index, v in enumerate(self.root):
+            if value <= v:
+                self.root = self.root[:index] + (value,) + self.root[index:]
+                return self
 
-        it = self.root
-        while it.next is not None and value > it.next.value:
-            it = it.next
-    
-        it.next = Node(value, it.next)
+        self.root = self.root + (value,)
         return self
 
     def sort_insert(self):
         """Sorts the list"""
-        if self.root is None or self.root.next is None:
+        if len(self.root) <= 1:
             return self
 
-        new_list = LinkedList(self.root.value)
-        it = self.root.next
-        while it is not None:
-            new_list.insert_sorted(it.value)
-            it = it.next
+        new_list = TupleList()
+        for v in self.root:
+            new_list.insert_sorted(v)
         
         self.root = new_list.root
         return self
 
     def sort_bubble(self):
-        if self.root is None or self.root.next is None:
+        if len(self.root) <= 1:
             return self
 
         swapped = True
         while swapped:
             swapped = False
-            it = self.root
-            while it.next is not None:
-                if it.value > it.next.value:
-                    it.next.value, it.value = it.value, it.next.value
+            for index, value in enumerate(self.root[1:]):
+                if value < self.root[index]:
                     swapped = True
-                it = it.next
-                
+                    self.root = self.root[:index] + (value, self.root[index]) + self.root[index+2:]
+
         return self
 
     def sort_merge(self):
-        if self.root is None or self.root.next is None:
+        if len(self.root) <= 1:
             return self
 
         # lol = list of lists
-        lol = LinkedList()
-        it = self.root
+        lol = TupleList()
 
         # step 1: sort elements by pair
         # I'm reusing the Nodes
-        while it is not None and it.next is not None:
-            if it.value <= it.next.value:
-                # these two nodes are already in order, just push the first one
-                # and we will adjust links after that
-                lol.prepend(it)
-
-                # tricky line:
-                # 1- The second node next link to None
-                # 2- The iterator jumps two nodes
-                it.next.next, it = None, it.next.next
+        for a, b in twobytwo(self.root):
+            if b is not ():
+                if a <= b:
+                    lol.prepend((a, b))
+                else:
+                    lol.prepend((b, a))
 
             else:
-                # We have to swap both nodes and adjust the links
-                # first push the second node
-                lol.prepend(it.next)
-
-                # tricky line, MUST be in this order:
-                # 1- The second node next link becomes the first node
-                # 2- The first node next link becomes None
-                # 3- The iterator jumps two nodes
-                it.next.next, it.next, it = it, None, it.next.next
-
-        if it is not None:
-            lol.prepend(it)
+                lol.prepend((a,))
 
         # Step 2: merge sublists two by two
         # also reusing the Nodes
-        while lol.root.next is not None:
-            it, lol.root = lol.root, None
-            while it is not None and it.next is not None:
-                lol.prepend(merge_nodes(it.value, it.next.value))
-                it = it.next.next
+        while len(lol.root) > 1:
+            old_root = lol.root
+            lol.root = ()
+            for a, b in twobytwo(old_root):
+                lol.prepend(merge_tuples(a, b))
 
-            if it is not None:
-                lol.prepend(it)
-
-        self.root = lol.root.value
+        self.root = lol.root[0]
         return self
 
 
 if __name__ == '__main__':
     print('LinkedList example')
 
-    print("new empty", LinkedList())
-    print("new one element", LinkedList(1))
-    print("new multiple elements", LinkedList(1, 2, 3, 4, 5))
+    print("new empty", TupleList())
+    print("new one element", TupleList(1))
+    print("new multiple elements", TupleList(1, 2, 3, 4, 5))
 
-    print("len empty", len(LinkedList()))
-    print("len one element", len(LinkedList(1)))
-    print("len multiple elements", len(LinkedList(1, 2, 3, 4, 5)))
+    print("len empty", len(TupleList()))
+    print("len one element", len(TupleList(1)))
+    print("len multiple elements", len(TupleList(1, 2, 3, 4, 5)))
 
-    li = LinkedList()
+    li = TupleList()
     print('li =', li)
     print('li.prepend(1) =', li.prepend(1))
     print('li.prepend(2) =', li.prepend(2))
@@ -248,13 +221,17 @@ if __name__ == '__main__':
     print('li.append(2) =', li.append(2))
     print('li.append(3) =', li.append(3))
     print('li.at(2) =', li.at(2))
-    print('li.at(8) =', li.at(8))
+    try:
+        print('li.at(8) =', li.at(8))
+    except IndexError:
+        print("Expected error happened")
+
     print('li.copy().delete(1,3) =', li.copy().delete(1, 3))
     print('li.delete(2) =', li.delete(2))
     print('li.remove(2) =', li.remove(2))
     print('li.remove_all(3) =', li.remove_all(3))
 
-    li2 = LinkedList('a', 'b', 'c', 'd')
+    li2 = TupleList('a', 'b', 'c', 'd')
     print('li2 =', li2)
     print('li2.set(0,"xxx") =', li2.set(0, "xxx"))
     print('li2.set(8,"out") =', li2.set(8, "out"))
@@ -264,11 +241,11 @@ if __name__ == '__main__':
     print('li2.insert(0,"start") =', li2.insert(0, "start"))
     print('li2.insert(8,"end") =', li2.insert(8, "end"))
 
-    print('reverse 1,2,3 =', LinkedList(1, 2, 3).reverse())
+    print('reverse 1,2,3 =', TupleList(1, 2, 3).reverse())
 
     print('li2[2] = ', li2[2])
 
-    insort = LinkedList()
+    insort = TupleList()
     print(insort.insert_sorted(2))
     print(insort.insert_sorted(5))
     print(insort.insert_sorted(4))
@@ -277,6 +254,6 @@ if __name__ == '__main__':
     print(insort.insert_sorted(3))
 
     print('insort =', insort)
-    print('sort_insert =', LinkedList(3, 6, 4, 7, 1, 2, 5, 0).sort_insert())
-    print('sort_bubble =', LinkedList(3, 6, 4, 7, 1, 2, 5, 0).sort_bubble())
-    print('sort_merge  =', LinkedList(6, 3, 4, 2, 1, 5, 0).sort_merge())
+    print('sort_insert =', TupleList(3, 6, 4, 7, 1, 2, 5, 0).sort_insert())
+    print('sort_bubble =', TupleList(3, 6, 4, 7, 1, 2, 5, 0).sort_bubble())
+    print('sort_merge  =', TupleList(6, 3, 4, 2, 1, 5, 0).sort_merge())
